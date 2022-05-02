@@ -6,12 +6,29 @@ const getCoinDetialAsync=createAsyncThunk(
     'coinDetial/getCoin',
     async(coinId)=>{
         const data= await getDetailedCoinData(coinId);  //不需要{}
-       // console.log(data);
-        return data;
+        // console.log(data);
+        // console.log(data.id);
+        const tmp={
+            id:"",
+            image:"https://upload.wikimedia.org/wikipedia/commons/7/78/HSNU_Logo.png",
+            symbol:"",
+            rank:"",
+        };
+        tmp.id=data.id;
+        tmp.image=data.image.small;
+        tmp.symbol=data.symbol;
+        tmp.rank=data.market_data.market_cap_rank;
+        // console.log(tmp);
+        return tmp;
     }
 );
 const initialState={
-    coinData:[],
+    coinData:{
+        id:"AAA",
+        image:"",
+        symbol:"777",
+        rank:"777",
+    },
     status:"idle",
 
 };
@@ -27,9 +44,10 @@ const detialSlice=createSlice({
             state.status="idle";
             state.coinData=action.payload;
         })
-        // .addCase(getCoinsAsync.rejected,(state)=>{
-        //     state.status="fail";
-        // })
+        .addCase(getCoinDetialAsync.rejected,(state)=>{
+            state.status="fail";
+            state.coinData="";
+        })
     },
 });
 export const selectCoinData=(state)=>state.coinDetial.coinData;

@@ -12,6 +12,8 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { getCoinDetialAsync, selectCoinData } from "../redux/coinDetialetialSlice";
 import { selectChartMode, toggleChartMode } from "../redux/chartModeSlice";
+import { getCoinMarketAsync, selectCoinMarketData } from "../redux/marketDataSlice";
+import { getCoinCandleAsync, selectCoinCandleData } from "../redux/candleDataSlice";
 
 const chartColor = "#16c784";
 const screenWidth = Dimensions.get("window").width * 0.8;
@@ -19,16 +21,20 @@ const screenWidth = Dimensions.get("window").width * 0.8;
 const CoinDetailedScreen = ({ route, navigation }) => {
   const dispatch=useDispatch();
   const coin=useSelector(selectCoinData);
-  // const candleChart=useSelector(selectChartMode);
+  const candleChart=useSelector(selectChartMode);
+  const coinMarket=useSelector(selectCoinMarketData);
+  const coinCandle=useSelector(selectCoinCandleData);
+  
   // console.log(candleChart);
   //console.log(coin.image.small);
    //console.log(coin);
  // const [coinn, setCoin] = useState(null);
-  const [coinMarketData, setCoinMarketData] = useState([]);
+  //const [coinMarketData, setCoinMarketData] = useState([]);
   const [coinCandleChartData, setCoinCandleChartData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedRange, setSelectedRange] = useState("1");
-  const [isCandleChartVisible, setIsCandleChartVisible] = useState(false);
+  // const [isCandleChartVisible, setIsCandleChartVisible] = useState(false);
+
   const { coinId } = route.params;
   const { colorMode } = useColorMode();
 
@@ -38,13 +44,10 @@ const CoinDetailedScreen = ({ route, navigation }) => {
   //   setCoin(fetchedCoinData);
   // };
 
-  const fetchMarketCoinData = async (selectedRangeValue) => {
-    const fetchedCoinMarketData = await getCoinMarketChart(
-      coinId,
-      selectedRangeValue
-    );
-    setCoinMarketData(fetchedCoinMarketData);
-  };
+  // const fetchMarketCoinData = async (selectedRangeValue) => {
+  //   const fetchedCoinMarketData = await getCoinMarketChart(coinId,selectedRangeValue);
+  //   setCoinMarketData(fetchedCoinMarketData);
+  // };
 
   const fetchCandleStickChartData = async (selectedRangeValue) => {
     const fetchedSelectedCandleChartData = await getCandleChartData(
@@ -55,40 +58,53 @@ const CoinDetailedScreen = ({ route, navigation }) => {
   };
 
   const onSelectedRangeChange = (selectedRangeValue) => {
+    //console.log("DFGHJUAQMWDJKA:   "+selectedRangeValue);
     setSelectedRange(selectedRangeValue);
-    fetchMarketCoinData(selectedRangeValue);
-    fetchCandleStickChartData(selectedRangeValue);
+    //fetchMarketCoinData(selectedRangeValue);
+    //fetchCandleStickChartData(selectedRangeValue);
+    dispatch(getCoinMarketAsync({id:coinId,rang:selectedRangeValue}));
+    dispatch(getCoinCandleAsync({id:coinId,rang:selectedRangeValue}));
   };
 
   useEffect(() => {
     setLoading(true);
     //fetchCoinData();
     dispatch(getCoinDetialAsync(coinId));
-     //console.log(coinn);
-    fetchMarketCoinData(1);
+    dispatch(getCoinMarketAsync({id:coinId,rang:1}));
+    dispatch(getCoinCandleAsync({id:coinId,rang:1}));
+    //console.log(coinMarket);
+    //console.log(coinn);
+    //fetchMarketCoinData(1);
     fetchCandleStickChartData(1);
     setLoading(false);
   }, []);
 
   useEffect(() => {
+    dispatch(getCoinDetialAsync(coinId));
     if (coin != null) {
+      // console.log(coin);
+      // console.log(coin.id);
+      // console.log(coin.image);
+      // console.log(coin.symbol);
+      // console.log(coin.rank);
       navigation.setOptions({
         headerTitle: () => {
           return (
             <CoinDetailedHeader
               coinId={coin.id}
-              image={coin.image.small}
+              image={coin.image}
               symbol={coin.symbol}
-              marketCapRank={coin.market_data.market_cap_rank}
+              marketCapRank={coin.rank}
             />
           )
         },
       });
     }
-  }, [coin])
+  }, )
+
 
   let line_data = [];
-  coinMarketData.prices?.map(([timestamp, value]) => line_data.push({ timestamp, value }))
+  coinMarket.prices?.map(([timestamp, value]) => line_data.push({ timestamp, value }))
 
   let candle_data = [];
   coinCandleChartData?.map(([timestamp, open, high, low, close]) => candle_data.push({ timestamp, open, high, low, close }))
@@ -106,22 +122,22 @@ const CoinDetailedScreen = ({ route, navigation }) => {
 
             <HStack space={8} alignItems="center" mb={12} >
               <Text fontSize="lg">
-                {!isCandleChartVisible ? "Line Chart" : "Candle Chart"}
+                {!candleChart ? "Line Chart" : "Candle Chart"}
               </Text>
-              {/* <Button onPress={()=>{dispatch(toggleChartMode());console.log(candleChart);}}>aaaaaaaaaaA</Button> */}
+              {/* <Button onPress={()=>{console.log(coinCandle);console.log("ASDASDADASDASDASD");console.log(coinCandleChartData);}}>aaaaaaaaaaA</Button> */}
 
               <Switch
                 size="sm"
                 colorScheme="emerald"
                 name="line Mode"
-                isChecked={!isCandleChartVisible}
-                onToggle={() => setIsCandleChartVisible(!isCandleChartVisible)}
+                isChecked={candleChart}
+                onToggle={() => dispatch(toggleChartMode())}
                 accessibilityLabel="line-mode"
                 accessibilityHint="line or candle"
               />
             </HStack>
             {
-              !isCandleChartVisible
+              !candleChart
                 ? (
                   <LineChart.Provider data={line_data} >
                     <LineChart height={screenWidth / 2} width={screenWidth}>

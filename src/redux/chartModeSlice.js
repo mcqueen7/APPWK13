@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState={
-    ModeValue:false
+    modeValue:false
 };
 
 const chartModeSlice=createSlice({
@@ -9,10 +9,10 @@ const chartModeSlice=createSlice({
     initialState,
     reducers:{
         toggleChartMode:(state)=>{
-            !state.ModeValue;
+            state.modeValue=!(state.modeValue);
         },
     }
 });
-export const selectChartMode=(state)=>state.chartMode.ModeValue;
+export const selectChartMode=(state)=>state.chartMode.modeValue;
 export const {toggleChartMode}=chartModeSlice.actions;
 export default chartModeSlice.reducer;

@@ -6,7 +6,7 @@ const getCoinsAsync=createAsyncThunk(
     async(pageNumber)=>{
         const data= await getMarketData(pageNumber);  //不需要{}
         // console.log("AAAAAAAAAAAAAAAAAA");
-        // console.log(data[1].name);
+        // console.log(data);
         return data;
     }
 );
