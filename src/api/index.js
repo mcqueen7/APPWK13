@@ -1,39 +1,13 @@
 import axios from "axios";
 
-export const getMarketData = async (pageNumber = 1) => {
-  try {
-    const response = await axios.get(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=${pageNumber}&sparkline=false&price_change_percentage=24h`)
-    //  console.log(response);
-    return response.data;
-  } catch (e) {
-    console.log(e)
-  }
-}
+export const getUbikeInfo = async () => {
+   const { data } = await axios.get("https://tcgbusfs.blob.core.windows.net/dotapp/youbike/v2/youbike_immediate.json?fbclid=IwAR0vU-pRxjGqDSyGw0pAGMQ1Q08xlmHdfBlHJzOA_cVOUdvA9yQ5PhvRhVU");
 
-export const getDetailedCoinData = async (coinId) => {
-  try {
-    const response = await axios.get(`https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&tickers=true&market_data=true&community_data=false&developer_data=false&sparkline=false`)
-    return response.data;
-  } catch (e) {
-    console.log(e);
-  }
-}
+   const tmpdata=data.splice(580,7);
+   //要取多少資料 太多會卡跑不動
+   //console.log(tmpdata);
+   return tmpdata;
+ };
 
-export const getCoinMarketChart = async (coinId, selectedRange) => {
-  try {
-    const response = await axios.get(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=${selectedRange}&interval=hourly`)
-    return response.data;
-  } catch (e) {
-    console.log(e);
-  }
-}
 
-export const getCandleChartData = async (coinId, days = 1) => {
-  try {
-    const response = await axios.get(`https://api.coingecko.com/api/v3/coins/${coinId}/ohlc?vs_currency=usd&days=${days}`)
-    return response.data;
-  } catch (e) {
-    console.log(e);
-  }
-}
-
+//  https://data.ntpc.gov.tw/api/datasets/71CD1490-A2DF-4198-BEF1-318479775E8A/json/preview

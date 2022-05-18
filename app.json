@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "wk1proj",
-    "slug": "wk1proj",
+    "name": "wkc",
+    "slug": "wkc",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#29303A"
+      "backgroundColor": "#ffffff"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
